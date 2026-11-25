@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}ML Anomaly Detection - AI Weather Data Integrity System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h3 class="fw-bold text-light mb-1"><i class="fa-solid fa-triangle-exclamation text-info me-2"></i> Machine Learning Anomaly Detection Suite</h3>
+    <p class="text-secondary mb-0">Ensemble comparison: Isolation Forest vs. Local Outlier Factor (LOF) vs. Z-Score Statistical Testing.</p>
+</div>
+
+<!-- Model Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="cyber-card h-100" style="border-top: 3px solid #00f0ff;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-title-cyber mb-0">Isolation Forest</span>
+                <span class="badge bg-info text-dark">Tree Partitioning</span>
+            </div>
+            <div class="stat-value text-info">{{ iso_summary.anomalies_detected|default(0) }}</div>
+            <p class="text-secondary small mt-1 mb-0">Contamination: <code>{{ iso_summary.contamination_parameter|default(0.05) }}</code> &bull; Anomaly Rate: <strong>{{ iso_summary.anomaly_rate_percent|default(0) }}%</strong></p>
+            <div class="text-muted small mt-2">Isolates anomalies quickly by random tree splits. Highly effective on multi-variate weather spikes.</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="cyber-card h-100" style="border-top: 3px solid #3a86ff;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-title-cyber mb-0">Local Outlier Factor (LOF)</span>
+                <span class="badge bg-primary">Density Based</span>
+            </div>
+            <div class="stat-value text-primary">{{ lof_summary.anomalies_detected|default(0) }}</div>
+            <p class="text-secondary small mt-1 mb-0">Neighbors (k): <code>{{ lof_summary.n_neighbors|default(20) }}</code> &bull; Anomaly Rate: <strong>{{ lof_summary.anomaly_rate_percent|default(0) }}%</strong></p>
+            <div class="text-muted small mt-2">Measures local density relative to k-nearest neighbors. Excellent for identifying subtle local micro-climate deviations.</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="cyber-card h-100" style="border-top: 3px solid #fbbf24;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-title-cyber mb-0">Z-Score Method</span>
+                <span class="badge bg-warning text-dark">Standard Deviation</span>
+            </div>
+            <div class="stat-value text-warning">{{ zscore_summary.anomalies_detected|default(0) }}</div>
+            <p class="text-secondary small mt-1 mb-0">Threshold: <code>|Z| > {{ zscore_summary.threshold|default(3.0) }}&sigma;</code> &bull; Rolling: <strong>24h</strong></p>
+            <div class="text-muted small mt-2">Flags values deviating by more than 3 standard deviations from diurnal baseline or moving mean.</div>
+        </div>
+    </div>
+</div>
+
+<!-- Comparison Chart -->
+<div class="cyber-card mb-4">
+    <div class="fw-bold text-light mb-3"><i class="fa-solid fa-code-compare text-info me-2"></i> Multi-Algorithm Anomaly Agreement Stream</div>
+    <div id="chart-ml-comparison" style="height: 380px;"></div>
+</div>
+
+<!-- Anomalies Table -->
+<div class="cyber-card mb-4">
+    <div class="fw-bold text-light mb-3"><i class="fa-solid fa-table-list text-info me-2"></i> Detailed Anomaly Detections Log</div>
+    <div class="table-responsive">
+        <table class="table table-cyber mb-0">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Temp (°C)</th>
+                    <th>Humidity (%)</th>
+                    <th>Wind (km/h)</th>
+                    <th>Rain (mm)</th>
+                    <th>Iso Forest</th>
+                    <th>LOF</th>
+                    <th>Z-Score</th>
+                    <th>Consensus</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if anomaly_rows %}
+                    {% for r in anomaly_rows[:15] %}
+                    <tr>
+                        <td class="font-monospace text-secondary">{{ r.timestamp }}</td>
+                        <td class="font-monospace">{{ r.temperature }}</td>
+                        <td class="font-monospace">{{ r.humidity }}</td>
+                        <td class="font-monospace">{{ r.wind_speed }}</td>
+                        <td class="font-monospace">{{ r.rainfall }}</td>
+                        <td>
+                            {% if r.iso_forest_anomaly == 1 %}
+                            <span class="badge bg-danger">OUTLIER</span>
+                            {% else %}
+                            <span class="badge bg-secondary">NORMAL</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r.lof_anomaly == 1 %}
+                            <span class="badge bg-danger">OUTLIER</span>
+                            {% else %}
+                            <span class="badge bg-secondary">NORMAL</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r.zscore_anomaly == 1 %}
+                            <span class="badge bg-danger">OUTLIER</span>
+                            {% else %}
+                            <span class="badge bg-secondary">NORMAL</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong class="{% if r.agreement >= 2 %}text-danger{% elif r.agreement == 1 %}text-warning{% else %}text-success{% endif %}">
+                                {{ r.agreement }} / 3 Models
+                            </strong>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">No anomalies detected across models.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const times = {{ chart_data.timestamps|tojson }};
+    const temps = {{ chart_data.temperatures|tojson }};
+    const isoAnoms = {{ chart_data.iso_indices|tojson }};
+    const lofAnoms = {{ chart_data.lof_indices|tojson }};
+    const zAnoms = {{ chart_data.z_indices|tojson }};
+
+    const traceBase = {
+        x: times,
+        y: temps,
+        mode: 'lines',
+        name: 'Observed Temperature (°C)',
+        line: { color: '#475569', width: 1.5 }
+    };
+
+    const traceIso = {
+        x: isoAnoms.map(i => times[i]),
+        y: isoAnoms.map(i => temps[i]),
+        mode: 'markers',
+        name: 'Isolation Forest',
+        marker: { color: '#00f0ff', size: 9, symbol: 'circle-open' }
+    };
+
+    const traceLof = {
+        x: lofAnoms.map(i => times[i]),
+        y: lofAnoms.map(i => temps[i]),
+        mode: 'markers',
+        name: 'Local Outlier Factor (LOF)',
+        marker: { color: '#a855f7', size: 8, symbol: 'square-open' }
+    };
+
+    const traceZ = {
+        x: zAnoms.map(i => times[i]),
+        y: zAnoms.map(i => temps[i]),
+        mode: 'markers',
+        name: 'Z-Score (|Z| > 3)',
+        marker: { color: '#ff0055', size: 8, symbol: 'diamond' }
+    };
+
+    Plotly.newPlot('chart-ml-comparison', [traceBase, traceIso, traceLof, traceZ], {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        margin: { t: 20, r: 20, l: 40, b: 40 },
+        font: { color: '#94a3b8' },
+        xaxis: { gridcolor: '#1c2c54' },
+        yaxis: { gridcolor: '#1c2c54', title: 'Temperature (°C)' },
+        legend: { orientation: 'h', y: 1.1 }
+    }, { responsive: true });
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment Variables
+.env
+!.env.example
+
+# Database Files
+database/*.db
+
+# Testing / Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Processed exports & test files
+reports/*.pdf
+data/processed/

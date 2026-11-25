@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Integrity Reports - AI Weather Data Integrity System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h3 class="fw-bold text-light mb-1"><i class="fa-solid fa-file-pdf text-info me-2"></i> Audit Documentation & Report Generation</h3>
+    <p class="text-secondary mb-0">Generate verifiable meteorological integrity audit certificates and export sanitized datasets.</p>
+</div>
+
+<!-- Download Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="cyber-card h-100 p-4">
+            <div class="d-flex align-items-center mb-3">
+                <div class="p-3 rounded-circle me-3" style="background: rgba(239, 68, 68, 0.15);">
+                    <i class="fa-solid fa-file-pdf text-danger fs-2"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-light mb-0">Academic & Enterprise PDF Audit Report</h5>
+                    <small class="text-muted">Formatted for college defense and compliance review</small>
+                </div>
+            </div>
+            <p class="text-secondary small mb-4">
+                Contains executive summaries, weighted integrity scores, statistical distributions, 
+                multi-model anomaly consensus breakdown, Deep Learning residual thresholds, 
+                and recommended physical sensor troubleshooting actions.
+            </p>
+            <a href="{{ url_for('download_pdf_report') }}" class="btn btn-cyber-primary w-100 py-2">
+                <i class="fa-solid fa-download me-2"></i> Download Official PDF Report
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="cyber-card h-100 p-4">
+            <div class="d-flex align-items-center mb-3">
+                <div class="p-3 rounded-circle me-3" style="background: rgba(16, 185, 129, 0.15);">
+                    <i class="fa-solid fa-file-csv text-success fs-2"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-light mb-0">Sanitized & Imputed CSV Dataset</h5>
+                    <small class="text-muted">Cleaned, deduplicated, and labeled archive</small>
+                </div>
+            </div>
+            <p class="text-secondary small mb-4">
+                Export the sanitized meteorological dataset with imputed null values, 
+                annotated anomaly flags from all ML models (Isolation Forest, LOF, Z-Score), 
+                and individual record integrity confidence ratings.
+            </p>
+            <a href="{{ url_for('download_cleaned_dataset') }}" class="btn btn-cyber-outline w-100 py-2">
+                <i class="fa-solid fa-file-export me-2"></i> Download Sanitized CSV Dataset
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Dataset Summary Table -->
+<div class="cyber-card">
+    <h5 class="fw-bold text-light mb-3"><i class="fa-solid fa-clipboard-list text-info me-2"></i> Recent Ingestion & Audit History</h5>
+    <div class="table-responsive">
+        <table class="table table-cyber mb-0">
+            <thead>
+                <tr>
+                    <th>Audit ID</th>
+                    <th>Target Dataset</th>
+                    <th>Analyzed Timestamp</th>
+                    <th>Total Records</th>
+                    <th>Integrity Rating</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if recent_datasets %}
+                    {% for d in recent_datasets %}
+                    <tr>
+                        <td class="font-monospace text-muted">#{{ d.id }}</td>
+                        <td class="fw-semibold text-light">{{ d.filename }}</td>
+                        <td class="font-monospace text-secondary">{{ d.upload_time }}</td>
+                        <td class="font-monospace">{{ d.total_records }}</td>
+                        <td class="font-monospace fw-bold text-info">{{ d.integrity_percentage }}%</td>
+                        <td><span class="badge bg-success">{{ d.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-3">No historical audit records found.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}About Project - AI Weather Data Integrity System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h3 class="fw-bold text-light mb-1"><i class="fa-solid fa-circle-info text-info me-2"></i> About the System & Project Architecture</h3>
+    <p class="text-secondary mb-0">Academic Internship Project: Artificial Intelligence & Meteorological Data Integrity.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <!-- Project Overview -->
+        <div class="cyber-card mb-4">
+            <h5 class="fw-bold text-light mb-3"><i class="fa-solid fa-bullseye text-primary me-2"></i> 1. Problem Statement & Objectives</h5>
+            <p class="text-secondary">
+                Meteorological data is the cornerstone of civil aviation, agriculture, disaster management, 
+                and renewable energy forecasting. However, automated weather stations (AWS) deployed in the field 
+                suffer from physical sensor degradation, communication dropouts, ice accretion, electrical spikes, 
+                and potential cyber telemetry spoofing.
+            </p>
+            <p class="text-secondary mb-0">
+                This project builds an autonomous, multi-layered AI verification pipeline that audits 
+                time-series weather datasets, flags physical impossibilities, isolates spatial/temporal outliers, 
+                and calculates defensible integrity confidence scores without human intervention.
+            </p>
+        </div>
+
+        <!-- 5-Tier Verification Framework -->
+        <div class="cyber-card mb-4">
+            <h5 class="fw-bold text-light mb-3"><i class="fa-solid fa-layer-group text-info me-2"></i> 2. The 5-Tier Verification Framework</h5>
+            
+            <div class="mb-3">
+                <strong class="text-info d-block">Tier 1: Physical Boundary & Meteorological Plausibility</strong>
+                <p class="text-secondary small mb-0">Enforces physical boundaries (e.g., rainfall >= 0, 0% <= humidity <= 100%, -50°C <= temp <= 60°C). Any breach is an immediate hardware failure or packet corruption.</p>
+            </div>
+
+            <div class="mb-3">
+                <strong class="text-info d-block">Tier 2: Persistence & Sensor Freeze Detection</strong>
+                <p class="text-secondary small mb-0">Detects Analog-to-Digital Converter (ADC) lockups where a sensor repeats identical decimal values across 12+ consecutive hours.</p>
+            </div>
+
+            <div class="mb-3">
+                <strong class="text-info d-block">Tier 3: Machine Learning Spatial Outlier Suite</strong>
+                <p class="text-secondary small mb-0">Runs Isolation Forest (path-length tree isolation), Local Outlier Factor (k-NN density deviations), and Rolling Z-Score (|Z| > 3.0&sigma;).</p>
+            </div>
+
+            <div class="mb-3">
+                <strong class="text-info d-block">Tier 4: Deep Learning Temporal & Structural Modeling</strong>
+                <p class="text-secondary small mb-0">LSTM Recurrent Neural Networks learn the diurnal cycle to predict the next hour's temperature, flagging high residual errors. Deep Autoencoders compress multi-variate correlations and flag impossible joint distributions.</p>
+            </div>
+
+            <div>
+                <strong class="text-info d-block">Tier 5: Threat & Incident Severity Scoring</strong>
+                <p class="text-secondary small mb-0">Consolidates results into a weighted 0-100 integrity score and outputs structured alerts (LOW, MEDIUM, HIGH, CRITICAL).</p>
+            </div>
+        </div>
+
+        <!-- Metrology vs Cyber Clarification -->
+        <div class="cyber-card">
+            <h5 class="fw-bold text-light mb-2"><i class="fa-solid fa-shield-halved text-warning me-2"></i> 3. Meteorological Anomaly vs. Malicious Tampering</h5>
+            <p class="text-secondary small mb-0">
+                A core academic contribution of this work is the strict distinction between natural severe weather and artificial data manipulation:
+                A severe storm naturally creates high wind gusts accompanied by heavy rainfall and humidity jumps (verified as a <em>Meteorological Outlier</em>). 
+                Conversely, an artificial injection or faulty sensor might report a +25°C temperature spike with zero change in surrounding parameters or negative precipitation (classified as <em>Potential Tampering or Hardware Corruption</em>).
+            </p>
+        </div>
+    </div>
+
+    <!-- Technology Stack Sidebar -->
+    <div class="col-lg-4">
+        <div class="cyber-card mb-4">
+            <h5 class="fw-bold text-light mb-3"><i class="fa-solid fa-microchip text-info me-2"></i> Technology Stack</h5>
+            <ul class="list-unstyled mb-0 small">
+                <li class="mb-2"><strong class="text-light">Backend:</strong> <span class="text-secondary">Python 3.10, Flask</span></li>
+                <li class="mb-2"><strong class="text-light">Machine Learning:</strong> <span class="text-secondary">Scikit-learn, Isolation Forest, LOF, Z-Score</span></li>
+                <li class="mb-2"><strong class="text-light">Deep Learning:</strong> <span class="text-secondary">TensorFlow 2.16, Keras, LSTM, Autoencoder</span></li>
+                <li class="mb-2"><strong class="text-light">Data Engineering:</strong> <span class="text-secondary">Pandas, NumPy, SciPy</span></li>
+                <li class="mb-2"><strong class="text-light">Visualization:</strong> <span class="text-secondary">Plotly.js, Matplotlib, Seaborn</span></li>
+                <li class="mb-2"><strong class="text-light">Database:</strong> <span class="text-secondary">SQLite3 (MySQL-compatible DDL)</span></li>
+                <li class="mb-2"><strong class="text-light">Reporting:</strong> <span class="text-secondary">ReportLab PDF Engine</span></li>
+                <li><strong class="text-light">Frontend:</strong> <span class="text-secondary">HTML5, CSS3, Bootstrap 5, FontAwesome</span></li>
+            </ul>
+        </div>
+
+        <div class="cyber-card">
+            <h5 class="fw-bold text-light mb-3"><i class="fa-solid fa-graduation-cap text-success me-2"></i> Academic Internship Info</h5>
+            <p class="text-secondary small mb-2"><strong class="text-light">Project Title:</strong> AI-Based Weather Data Integrity System</p>
+            <p class="text-secondary small mb-2"><strong class="text-light">Focus Area:</strong> Metrology, Data Science & Cybersecurity</p>
+            <p class="text-secondary small mb-0"><strong class="text-light">Year:</strong> 2026</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

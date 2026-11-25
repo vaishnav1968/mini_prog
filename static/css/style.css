@@ -1,0 +1,201 @@
+/* AI Weather Data Integrity System - Dark Cyber-Inspired Theme */
+:root {
+    --bg-primary: #0a0f1d;
+    --bg-secondary: #111a33;
+    --bg-card: #152243;
+    --bg-card-hover: #1c2c54;
+    --border-color: #233560;
+    --accent-cyan: #00f0ff;
+    --accent-blue: #3a86ff;
+    --accent-purple: #7209b7;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --critical: #ff0055;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+}
+
+/* Navbar */
+.cyber-navbar {
+    background-color: rgba(17, 26, 51, 0.95);
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: var(--text-primary) !important;
+    letter-spacing: 0.5px;
+}
+
+.brand-badge {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+}
+
+.nav-link {
+    color: var(--text-secondary) !important;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.9rem !important;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--accent-cyan) !important;
+    background: rgba(0, 240, 255, 0.08);
+}
+
+/* Cyber Cards */
+.cyber-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cyber-card:hover {
+    border-color: rgba(0, 240, 255, 0.4);
+}
+
+.card-title-cyber {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+}
+
+/* Badges */
+.badge-critical {
+    background-color: rgba(255, 0, 85, 0.2);
+    color: #ff3377;
+    border: 1px solid rgba(255, 0, 85, 0.4);
+}
+
+.badge-high {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.badge-medium {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.badge-low {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+/* Tables */
+.table-cyber {
+    color: var(--text-primary);
+    background-color: var(--bg-card);
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.table-cyber th {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.8rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.table-cyber td {
+    padding: 0.75rem 0.8rem;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(35, 53, 96, 0.5);
+    vertical-align: middle;
+}
+
+.table-cyber tr:hover td {
+    background-color: rgba(0, 240, 255, 0.04);
+}
+
+/* Buttons */
+.btn-cyber-primary {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 1.25rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 15px rgba(0, 114, 255, 0.3);
+}
+
+.btn-cyber-primary:hover {
+    background: linear-gradient(135deg, #00f0ff, #0088ff);
+    box-shadow: 0 6px 20px rgba(0, 240, 255, 0.4);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-cyber-outline {
+    background: transparent;
+    color: var(--accent-cyan);
+    border: 1px solid var(--accent-cyan);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.55rem 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.btn-cyber-outline:hover {
+    background: rgba(0, 240, 255, 0.1);
+    color: #fff;
+    border-color: #fff;
+}
+
+/* Live Pulse Indicator */
+.pulse-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+    position: relative;
+}
+
+.pulse-indicator.green {
+    background-color: var(--success);
+    box-shadow: 0 0 10px var(--success);
+}
+
+.pulse-indicator.red {
+    background-color: var(--danger);
+    box-shadow: 0 0 10px var(--danger);
+}

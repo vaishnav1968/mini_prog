@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Deep Learning Models - AI Weather Data Integrity System{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h3 class="fw-bold text-light mb-1"><i class="fa-solid fa-brain text-info me-2"></i> Deep Learning: Temporal & Structural Integrity</h3>
+    <p class="text-secondary mb-0">LSTM Recurrent Forecasting residuals and Deep Autoencoder multi-variate reconstruction error analysis.</p>
+</div>
+
+<!-- DL Metrics Overview -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="cyber-card h-100" style="border-left: 4px solid var(--accent-cyan);">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-title-cyber mb-0">LSTM Sequence Model</span>
+                <span class="badge bg-info text-dark">Recurrent Neural Net</span>
+            </div>
+            <div class="stat-value text-info">{{ lstm_summary.anomalies_detected|default(0) }}</div>
+            <p class="text-secondary small mt-1 mb-2">Residual Threshold: <code>&plusmn;{{ lstm_summary.residual_threshold|default(3.5)|round(2) }}°C</code> &bull; Mean MAE: <strong>{{ lstm_summary.final_mae|default(0.8)|round(3) }}</strong></p>
+            <div class="text-muted small">Trained on 24-hour lookback sequences to predict expected temperature. Large discrepancies between expected and measured values indicate sudden artificial steps or sensor malfunctions.</div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="cyber-card h-100" style="border-left: 4px solid var(--accent-purple);">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-title-cyber mb-0">Deep Autoencoder Model</span>
+                <span class="badge bg-purple text-light" style="background: var(--accent-purple);">Bottleneck Latent</span>
+            </div>
+            <div class="stat-value" style="color: #c084fc;">{{ autoenc_summary.anomalies_detected|default(0) }}</div>
+            <p class="text-secondary small mt-1 mb-2">Reconstruction Threshold MSE: <code>{{ autoenc_summary.reconstruction_threshold|default(0.12)|round(4) }}</code> &bull; Latent Dim: <strong>2</strong></p>
+            <div class="text-muted small">Compresses multi-variate atmospheric features into a bottleneck representation. Impossible correlations (e.g. freezing temp with tropical humidity) produce high reconstruction loss.</div>
+        </div>
+    </div>
+</div>
+
+<!-- LSTM Predictions Chart -->
+<div class="cyber-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="fw-bold text-light"><i class="fa-solid fa-chart-line text-info me-2"></i> LSTM Actual vs. Predicted Temperature (Sequence Evaluation)</div>
+        <span class="badge bg-secondary">Sliding Window = 24 Hours</span>
+    </div>
+    <div id="chart-lstm-prediction" style="height: 380px;"></div>
+</div>
+
+<!-- Autoencoder Reconstruction Error Stream -->
+<div class="cyber-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="fw-bold text-light"><i class="fa-solid fa-wave-square text-warning me-2"></i> Autoencoder Reconstruction Error (Mean Squared Error)</div>
+        <span class="text-secondary small">Red dashed line denotes 95th percentile anomaly threshold</span>
+    </div>
+    <div id="chart-autoencoder-loss" style="height: 300px;"></div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const times = {{ chart_data.timestamps|tojson }};
+    const actuals = {{ chart_data.temperatures|tojson }};
+    const preds = {{ chart_data.lstm_preds|tojson }};
+    const aeLosses = {{ chart_data.autoencoder_losses|tojson }};
+    const aeThreshold = {{ autoenc_summary.reconstruction_threshold|default(0.15) }};
+
+    // LSTM Plot
+    Plotly.newPlot('chart-lstm-prediction', [
+        {
+            x: times,
+            y: actuals,
+            mode: 'lines',
+            name: 'Actual Measured (°C)',
+            line: { color: '#94a3b8', width: 2 }
+        },
+        {
+            x: times,
+            y: preds,
+            mode: 'lines',
+            name: 'LSTM Predicted (°C)',
+            line: { color: '#00f0ff', width: 2, dash: 'dot' }
+        }
+    ], {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        margin: { t: 20, r: 20, l: 40, b: 40 },
+        font: { color: '#94a3b8' },
+        xaxis: { gridcolor: '#1c2c54' },
+        yaxis: { gridcolor: '#1c2c54', title: 'Temperature (°C)' },
+        legend: { orientation: 'h', y: 1.1 }
+    }, { responsive: true });
+
+    // Autoencoder Loss Plot
+    Plotly.newPlot('chart-autoencoder-loss', [
+        {
+            x: times,
+            y: aeLosses,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Reconstruction MSE',
+            line: { color: '#c084fc', width: 1.5 },
+            fill: 'tozeroy',
+            fillcolor: 'rgba(192, 132, 252, 0.1)'
+        },
+        {
+            x: [times[0], times[times.length - 1]],
+            y: [aeThreshold, aeThreshold],
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Anomaly Cutoff',
+            line: { color: '#ef4444', width: 2, dash: 'dash' }
+        }
+    ], {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        margin: { t: 20, r: 20, l: 40, b: 40 },
+        font: { color: '#94a3b8' },
+        xaxis: { gridcolor: '#1c2c54' },
+        yaxis: { gridcolor: '#1c2c54', title: 'Reconstruction Loss (MSE)' },
+        legend: { orientation: 'h', y: 1.1 }
+    }, { responsive: true });
+</script>
+{% endblock %}

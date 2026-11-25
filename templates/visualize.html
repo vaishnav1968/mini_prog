@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Weather Trends - AI Weather Data Integrity System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-light mb-1"><i class="fa-solid fa-chart-line text-info me-2"></i> Meteorological Stream & Multi-Variate Analysis</h3>
+        <p class="text-secondary mb-0">Historical time-series, parameter correlations, and interactive zoomable telemetry.</p>
+    </div>
+    <a href="{{ url_for('download_cleaned_dataset') }}" class="btn btn-cyber-outline btn-sm">
+        <i class="fa-solid fa-download me-1"></i> Export Sanitized Dataset
+    </a>
+</div>
+
+<!-- Multi-variable Trend Graphs -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="cyber-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="fw-bold text-light"><i class="fa-solid fa-layer-group text-info me-2"></i> Synchronized Multi-Parameter Telemetry</div>
+                <span class="text-muted small">Zoom and pan to inspect specific hours</span>
+            </div>
+            <div id="chart-synced-telemetry" style="height: 480px;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="cyber-card h-100">
+            <div class="fw-bold text-light mb-3"><i class="fa-solid fa-compass text-warning me-2"></i> Temperature vs. Relative Humidity Correlation</div>
+            <div id="chart-scatter-temp-hum" style="height: 340px;"></div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="cyber-card h-100">
+            <div class="fw-bold text-light mb-3"><i class="fa-solid fa-wind text-primary me-2"></i> Wind Speed vs. Rainfall Intensity</div>
+            <div id="chart-scatter-wind-rain" style="height: 340px;"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const times = {{ chart_data.timestamps|tojson }};
+    const temps = {{ chart_data.temperatures|tojson }};
+    const hums = {{ chart_data.humidities|tojson }};
+    const winds = {{ chart_data.wind_speeds|tojson }};
+    const rains = {{ chart_data.rainfalls|tojson }};
+
+    // Synced Multi-Parameter Telemetry
+    const trace1 = { x: times, y: temps, name: 'Temperature (°C)', type: 'scatter', line: { color: '#00f0ff' } };
+    const trace2 = { x: times, y: hums, name: 'Humidity (%)', yaxis: 'y2', type: 'scatter', line: { color: '#3a86ff' } };
+    const trace3 = { x: times, y: winds, name: 'Wind (km/h)', yaxis: 'y3', type: 'scatter', line: { color: '#fbbf24' } };
+
+    const synLayout = {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        margin: { t: 30, r: 50, l: 50, b: 40 },
+        font: { color: '#94a3b8' },
+        xaxis: { gridcolor: '#1c2c54' },
+        yaxis: { title: 'Temp (°C)', gridcolor: '#1c2c54', titlefont: { color: '#00f0ff' }, tickfont: { color: '#00f0ff' } },
+        yaxis2: { title: 'Humidity (%)', overlaying: 'y', side: 'right', titlefont: { color: '#3a86ff' }, tickfont: { color: '#3a86ff' } },
+        yaxis3: { title: 'Wind', overlaying: 'y', side: 'right', position: 0.95, showgrid: false, titlefont: { color: '#fbbf24' } },
+        legend: { orientation: 'h', y: 1.1 }
+    };
+    Plotly.newPlot('chart-synced-telemetry', [trace1, trace2, trace3], synLayout, { responsive: true });
+
+    // Temp vs Hum Correlation
+    Plotly.newPlot('chart-scatter-temp-hum', [{
+        x: temps,
+        y: hums,
+        mode: 'markers',
+        type: 'scatter',
+        marker: { color: temps, colorscale: 'Viridis', size: 6 }
+    }], {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        margin: { t: 20, r: 20, l: 40, b: 40 },
+        font: { color: '#94a3b8' },
+        xaxis: { title: 'Temperature (°C)', gridcolor: '#1c2c54' },
+        yaxis: { title: 'Humidity (%)', gridcolor: '#1c2c54' }
+    }, { responsive: true });
+
+    // Wind vs Rain
+    Plotly.newPlot('chart-scatter-wind-rain', [{
+        x: winds,
+        y: rains,
+        mode: 'markers',
+        type: 'scatter',
+        marker: { color: '#00f0ff', size: 7, opacity: 0.7 }
+    }], {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        margin: { t: 20, r: 20, l: 40, b: 40 },
+        font: { color: '#94a3b8' },
+        xaxis: { title: 'Wind Speed (km/h)', gridcolor: '#1c2c54' },
+        yaxis: { title: 'Rainfall (mm)', gridcolor: '#1c2c54' }
+    }, { responsive: true });
+</script>
+{% endblock %}

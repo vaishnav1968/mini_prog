@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Dataset - AI Weather Data Integrity System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold text-light mb-1"><i class="fa-solid fa-cloud-arrow-up text-info me-2"></i> Weather Data Ingestion & Sanitization</h3>
+                <p class="text-secondary mb-0">Upload real-world meteorological sensor streams or CSV archives for automated validation.</p>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <!-- Custom File Upload Card -->
+            <div class="col-md-7">
+                <div class="cyber-card h-100">
+                    <h5 class="fw-bold text-light mb-3"><i class="fa-solid fa-file-csv text-primary me-2"></i> Upload Custom CSV</h5>
+                    <form action="{{ url_for('upload_dataset') }}" method="POST" enctype="multipart/form-data">
+                        <div class="p-4 text-center border-2 border-dashed rounded-3 mb-3" style="border: 2px dashed var(--border-color); background: rgba(0,0,0,0.2);">
+                            <i class="fa-solid fa-file-import text-info fs-1 mb-3"></i>
+                            <p class="text-light mb-1">Select a CSV file from your computer</p>
+                            <p class="text-muted small mb-3">Expected columns: <code>timestamp, temperature, humidity, wind_speed, rainfall</code></p>
+                            <input type="file" name="file" class="form-control bg-dark text-light border-secondary mb-2" accept=".csv" required>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-secondary small"><i class="fa-solid fa-shield-cat me-1"></i> Max size: 15MB &bull; Sanitized</span>
+                            <button type="submit" class="btn btn-cyber-primary">
+                                <i class="fa-solid fa-play me-1"></i> Ingest & Run AI Scan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Pre-Built Benchmark Datasets -->
+            <div class="col-md-5">
+                <div class="cyber-card h-100">
+                    <h5 class="fw-bold text-light mb-3"><i class="fa-solid fa-box-archive text-warning me-2"></i> Standard Benchmarks</h5>
+                    <p class="text-secondary small">Instantly load academic test datasets designed to evaluate ML/DL anomaly detection accuracy:</p>
+
+                    <div class="list-group list-group-flush bg-transparent">
+                        <div class="list-group-item bg-transparent border-secondary px-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-light mb-0">Full 60-Day Benchmark</h6>
+                                    <small class="text-muted">1,440 hours &bull; Known spikes, freeze, packet drops</small>
+                                </div>
+                                <a href="{{ url_for('load_sample_data', sample_name='realistic') }}" class="btn btn-sm btn-outline-info">Load</a>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item bg-transparent border-secondary px-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-light mb-0">7-Day Rapid Demo</h6>
+                                    <small class="text-muted">168 hours &bull; Fast DL training test</small>
+                                </div>
+                                <a href="{{ url_for('load_sample_data', sample_name='demo') }}" class="btn btn-sm btn-outline-info">Load</a>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item bg-transparent border-secondary px-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-light mb-0">100% Clean Baseline</h6>
+                                    <small class="text-muted">Zero artificial anomalies &bull; Control set</small>
+                                </div>
+                                <a href="{{ url_for('load_sample_data', sample_name='clean') }}" class="btn btn-sm btn-outline-success">Load</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preprocessing Pipeline Details -->
+        <div class="cyber-card">
+            <h5 class="fw-bold text-light mb-3"><i class="fa-solid fa-filter text-info me-2"></i> Automated Preprocessing Pipeline Stages</h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="p-3 rounded" style="background: rgba(0,0,0,0.25); border-left: 3px solid var(--accent-cyan);">
+                        <strong class="text-light d-block mb-1">1. Format & Parsing</strong>
+                        <p class="text-secondary small mb-0">Sanitizes filenames, converts timestamps to UTC ISO-8601, deduplicates timestamp collisions.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded" style="background: rgba(0,0,0,0.25); border-left: 3px solid var(--accent-blue);">
+                        <strong class="text-light d-block mb-1">2. Physical Bounds</strong>
+                        <p class="text-secondary small mb-0">Checks meteorological physics (e.g., -50°C to +60°C, rain >= 0, humidity 0-100%).</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded" style="background: rgba(0,0,0,0.25); border-left: 3px solid var(--warning);">
+                        <strong class="text-light d-block mb-1">3. Imputation</strong>
+                        <p class="text-secondary small mb-0">Applies time-series linear interpolation and forward-fills for brief packet loss periods.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded" style="background: rgba(0,0,0,0.25); border-left: 3px solid var(--accent-purple);">
+                        <strong class="text-light d-block mb-1">4. Feature Scaling</strong>
+                        <p class="text-secondary small mb-0">Computes rolling standard deviations, rates-of-change, and MinMax/Standard scalers for ML/DL.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

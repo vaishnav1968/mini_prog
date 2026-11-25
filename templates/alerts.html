@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Alerts & Threats - AI Weather Data Integrity System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-light mb-1"><i class="fa-solid fa-bell text-warning me-2"></i> Real-Time Security & Metrological Alert Center</h3>
+        <p class="text-secondary mb-0">Prioritized incident stream classifying anomalies by severity: LOW, MEDIUM, HIGH, CRITICAL.</p>
+    </div>
+    <div>
+        <span class="badge bg-dark border border-secondary text-light px-3 py-2">
+            <i class="fa-solid fa-shield-virus me-1 text-info"></i> {{ alerts|length }} Total Incidents
+        </span>
+    </div>
+</div>
+
+<!-- Alert Severity Breakdown Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="cyber-card text-center" style="border-bottom: 3px solid var(--critical);">
+            <span class="card-title-cyber">CRITICAL</span>
+            <div class="stat-value" style="color: var(--critical);">{{ alert_summary.severity_counts.CRITICAL|default(0) }}</div>
+            <span class="text-muted small">Physical limits & frozen sensors</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="cyber-card text-center" style="border-bottom: 3px solid #ef4444;">
+            <span class="card-title-cyber">HIGH</span>
+            <div class="stat-value text-danger">{{ alert_summary.severity_counts.HIGH|default(0) }}</div>
+            <span class="text-muted small">Multi-model consensus outliers</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="cyber-card text-center" style="border-bottom: 3px solid #fbbf24;">
+            <span class="card-title-cyber">MEDIUM</span>
+            <div class="stat-value text-warning">{{ alert_summary.severity_counts.MEDIUM|default(0) }}</div>
+            <span class="text-muted small">Suspicious drift & sudden shifts</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="cyber-card text-center" style="border-bottom: 3px solid #10b981;">
+            <span class="card-title-cyber">LOW</span>
+            <div class="stat-value text-success">{{ alert_summary.severity_counts.LOW|default(0) }}</div>
+            <span class="text-muted small">Mild single-model triggers</span>
+        </div>
+    </div>
+</div>
+
+<!-- Full Alert Log Table -->
+<div class="cyber-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-light mb-0"><i class="fa-solid fa-list-check text-info me-2"></i> Comprehensive Incident History</h5>
+        <div class="text-muted small">Displaying latest {{ alerts|length }} records</div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-cyber mb-0">
+            <thead>
+                <tr>
+                    <th>Alert ID</th>
+                    <th>Timestamp</th>
+                    <th>Severity</th>
+                    <th>Meteorological Parameter</th>
+                    <th>Observed Value</th>
+                    <th>Expected Range</th>
+                    <th>Triggering Rule / Reason</th>
+                    <th>Integrity Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if alerts %}
+                    {% for a in alerts %}
+                    <tr>
+                        <td class="font-monospace text-muted">#{{ a.id }}</td>
+                        <td class="font-monospace text-secondary">{{ a.timestamp }}</td>
+                        <td>
+                            {% if a.severity == 'CRITICAL' %}
+                            <span class="badge badge-critical">CRITICAL</span>
+                            {% elif a.severity == 'HIGH' %}
+                            <span class="badge badge-high">HIGH</span>
+                            {% elif a.severity == 'MEDIUM' %}
+                            <span class="badge badge-medium">MEDIUM</span>
+                            {% else %}
+                            <span class="badge badge-low">LOW</span>
+                            {% endif %}
+                        </td>
+                        <td class="fw-semibold text-light">{{ a.parameter }}</td>
+                        <td class="font-monospace text-info">{{ a.detected_value }}</td>
+                        <td class="text-secondary small">{{ a.reference_range }}</td>
+                        <td class="text-light small">{{ a.reason }}</td>
+                        <td class="font-monospace fw-bold {% if a.integrity_score < 50 %}text-danger{% elif a.integrity_score < 75 %}text-warning{% else %}text-info{% endif %}">
+                            {{ a.integrity_score }} / 100
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">No active alerts recorded. Dataset passed all integrity checks.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

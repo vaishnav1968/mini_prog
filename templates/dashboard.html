@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Weather Data Integrity System{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-7">
+        <h2 class="fw-bold mb-1 text-light">Metrological & Threat Integrity Dashboard</h2>
+        <p class="text-secondary mb-0">Continuous monitoring, multi-model anomaly detection, and sensor health metrics.</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+        <div class="btn-group">
+            <a href="{{ url_for('load_sample_data', sample_name='demo') }}" class="btn btn-cyber-outline btn-sm">
+                <i class="fa-solid fa-bolt me-1"></i> Quick 7-Day Demo
+            </a>
+            <a href="{{ url_for('load_sample_data', sample_name='realistic') }}" class="btn btn-cyber-primary btn-sm ms-2">
+                <i class="fa-solid fa-database me-1"></i> Load Full 60-Day Benchmark
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Primary Metric Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-2">
+        <div class="cyber-card h-100">
+            <div class="card-title-cyber">Total Analyzed</div>
+            <div class="stat-value text-info">{{ metrics.total_records|default(0) }}</div>
+            <div class="text-muted small mt-1"><i class="fa-solid fa-clock me-1"></i> Hourly Observations</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="cyber-card h-100">
+            <div class="card-title-cyber">Integrity Score</div>
+            <div class="stat-value {% if metrics.integrity_percentage|default(100) >= 80 %}text-success{% elif metrics.integrity_percentage|default(100) >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                {{ metrics.integrity_percentage|default(100) }}%
+            </div>
+            <div class="text-muted small mt-1"><i class="fa-solid fa-shield-check me-1"></i> Weighted Metrology</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="cyber-card h-100">
+            <div class="card-title-cyber">Verified Normal</div>
+            <div class="stat-value text-success">{{ metrics.normal_readings|default(0) }}</div>
+            <div class="text-muted small mt-1"><i class="fa-solid fa-check-double me-1"></i> Within Bounds</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="cyber-card h-100">
+            <div class="card-title-cyber">Suspicious Drift</div>
+            <div class="stat-value text-warning">{{ metrics.suspicious_readings|default(0) }}</div>
+            <div class="text-muted small mt-1"><i class="fa-solid fa-chart-line-down me-1"></i> Mild Variance</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="cyber-card h-100">
+            <div class="card-title-cyber">ML/DL Anomalies</div>
+            <div class="stat-value text-danger">{{ metrics.anomalous_readings|default(0) }}</div>
+            <div class="text-muted small mt-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Model Outliers</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="cyber-card h-100">
+            <div class="card-title-cyber">Corrupted / Tampered</div>
+            <div class="stat-value" style="color: var(--critical);">{{ metrics.corrupted_or_tampered|default(0) }}</div>
+            <div class="text-muted small mt-1"><i class="fa-solid fa-biohazard me-1"></i> Physical/Freeze Faults</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row g-4 mb-4">
+    <!-- Main Parameter Trends & Anomalies Chart -->
+    <div class="col-lg-8">
+        <div class="cyber-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="fw-bold text-light"><i class="fa-solid fa-temperature-half text-info me-2"></i> Temperature & Outlier Detection Stream</div>
+                <span class="badge bg-secondary">Real-Time Series</span>
+            </div>
+            <div id="chart-temp-stream" style="height: 380px;"></div>
+        </div>
+    </div>
+
+    <!-- Integrity Breakdown & Anomaly Models -->
+    <div class="col-lg-4">
+        <div class="cyber-card h-100">
+            <div class="fw-bold text-light mb-3"><i class="fa-solid fa-pie-chart text-info me-2"></i> Integrity Classification</div>
+            <div id="chart-integrity-donut" style="height: 250px;"></div>
+            
+            <hr style="border-color: var(--border-color);">
+            <div class="mt-2">
+                <div class="d-flex justify-content-between small text-secondary mb-1">
+                    <span>Isolation Forest Outliers:</span>
+                    <strong class="text-light">{{ iso_summary.anomalies_detected|default(0) }}</strong>
+                </div>
+                <div class="d-flex justify-content-between small text-secondary mb-1">
+                    <span>Local Outlier Factor (LOF):</span>
+                    <strong class="text-light">{{ lof_summary.anomalies_detected|default(0) }}</strong>
+                </div>
+                <div class="d-flex justify-content-between small text-secondary mb-1">
+                    <span>Z-Score Statistical Flags:</span>
+                    <strong class="text-light">{{ zscore_summary.anomalies_detected|default(0) }}</strong>
+                </div>
+                <div class="d-flex justify-content-between small text-secondary">
+                    <span>Deep Autoencoder Loss Flags:</span>
+                    <strong class="text-light">{{ autoenc_summary.anomalies_detected|default(0) }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Multi-Parameter Mini Visualizations -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="cyber-card">
+            <div class="fw-bold text-light mb-2"><i class="fa-solid fa-droplet text-primary me-2"></i> Humidity Distribution (%)</div>
+            <div id="chart-humidity" style="height: 220px;"></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="cyber-card">
+            <div class="fw-bold text-light mb-2"><i class="fa-solid fa-wind text-warning me-2"></i> Wind Speed (km/h)</div>
+            <div id="chart-wind" style="height: 220px;"></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="cyber-card">
+            <div class="fw-bold text-light mb-2"><i class="fa-solid fa-cloud-rain text-info me-2"></i> Hourly Rainfall (mm)</div>
+            <div id="chart-rain" style="height: 220px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Security & Metrological Alerts Table -->
+<div class="cyber-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="fw-bold text-light"><i class="fa-solid fa-triangle-exclamation text-warning me-2"></i> High Priority Integrity Alerts</div>
+        <a href="{{ url_for('alerts_page') }}" class="btn btn-cyber-outline btn-sm">View All {{ alerts|length }} Alerts &rarr;</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-cyber mb-0">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Severity</th>
+                    <th>Parameter</th>
+                    <th>Detected Value</th>
+                    <th>Reference Range</th>
+                    <th>Root Cause / Rule Triggered</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if alerts %}
+                    {% for a in alerts[:8] %}
+                    <tr>
+                        <td class="font-monospace text-secondary">{{ a.timestamp }}</td>
+                        <td>
+                            {% if a.severity == 'CRITICAL' %}
+                            <span class="badge badge-critical">CRITICAL</span>
+                            {% elif a.severity == 'HIGH' %}
+                            <span class="badge badge-high">HIGH</span>
+                            {% elif a.severity == 'MEDIUM' %}
+                            <span class="badge badge-medium">MEDIUM</span>
+                            {% else %}
+                            <span class="badge badge-low">LOW</span>
+                            {% endif %}
+                        </td>
+                        <td class="fw-semibold">{{ a.parameter }}</td>
+                        <td class="font-monospace text-info">{{ a.detected_value }}</td>
+                        <td class="text-secondary small">{{ a.reference_range }}</td>
+                        <td class="text-light small">{{ a.reason }}</td>
+                        <td>
+                            <a href="{{ url_for('visualize_page') }}" class="btn btn-sm btn-outline-info py-0 px-2">Inspect</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">No active integrity violations detected. Data is verified.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Temperature Plot with Anomalies
+    const timeLabels = {{ chart_data.timestamps|tojson }};
+    const temps = {{ chart_data.temperatures|tojson }};
+    const anomIndices = {{ chart_data.anomaly_indices|tojson }};
+    const anomTemps = anomIndices.map(i => temps[i]);
+    const anomTimes = anomIndices.map(i => timeLabels[i]);
+
+    const traceTemp = {
+        x: timeLabels,
+        y: temps,
+        mode: 'lines',
+        name: 'Observed Temp (°C)',
+        line: { color: '#00f0ff', width: 2 }
+    };
+
+    const traceAnom = {
+        x: anomTimes,
+        y: anomTemps,
+        mode: 'markers',
+        name: 'Integrity Anomaly',
+        marker: { color: '#ff0055', size: 9, symbol: 'circle' }
+    };
+
+    const darkLayout = {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        margin: { t: 20, r: 20, l: 40, b: 40 },
+        font: { color: '#94a3b8', family: 'Inter' },
+        xaxis: { gridcolor: '#1c2c54', showgrid: true },
+        yaxis: { gridcolor: '#1c2c54', showgrid: true, title: '°C' },
+        legend: { orientation: 'h', y: 1.1 }
+    };
+
+    Plotly.newPlot('chart-temp-stream', [traceTemp, traceAnom], darkLayout, { responsive: true });
+
+    // Donut Chart
+    const donutData = [{
+        values: [
+            {{ metrics.normal_readings|default(1) }},
+            {{ metrics.suspicious_readings|default(0) }},
+            {{ metrics.anomalous_readings|default(0) }},
+            {{ metrics.corrupted_or_tampered|default(0) }}
+        ],
+        labels: ['Normal', 'Suspicious', 'Anomalous', 'Corrupted/Tampered'],
+        type: 'pie',
+        hole: 0.65,
+        marker: {
+            colors: ['#10b981', '#f59e0b', '#ef4444', '#ff0055']
+        },
+        textinfo: 'none'
+    }];
+    Plotly.newPlot('chart-integrity-donut', donutData, {
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        margin: { t: 10, r: 10, l: 10, b: 10 },
+        font: { color: '#94a3b8' },
+        showlegend: true,
+        legend: { font: { size: 10 }, orientation: 'v' }
+    }, { responsive: true });
+
+    // Mini charts: Humidity, Wind, Rain
+    Plotly.newPlot('chart-humidity', [{
+        x: timeLabels.slice(0, 72),
+        y: {{ chart_data.humidities|tojson }}.slice(0, 72),
+        type: 'scatter',
+        mode: 'lines',
+        fill: 'tozeroy',
+        line: { color: '#3a86ff' },
+        fillcolor: 'rgba(58, 134, 255, 0.15)'
+    }], { ...darkLayout, yaxis: { title: '%' } }, { responsive: true });
+
+    Plotly.newPlot('chart-wind', [{
+        x: timeLabels.slice(0, 72),
+        y: {{ chart_data.wind_speeds|tojson }}.slice(0, 72),
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: '#fbbf24' }
+    }], { ...darkLayout, yaxis: { title: 'km/h' } }, { responsive: true });
+
+    Plotly.newPlot('chart-rain', [{
+        x: timeLabels.slice(0, 72),
+        y: {{ chart_data.rainfalls|tojson }}.slice(0, 72),
+        type: 'bar',
+        marker: { color: '#00f0ff' }
+    }], { ...darkLayout, yaxis: { title: 'mm' } }, { responsive: true });
+</script>
+{% endblock %}
